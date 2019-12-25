@@ -1,9 +1,0 @@
-import React, { FC, ReactElement } from "react"
-
-const __Component__: FC<{}> = (): ReactElement => {
-  return (
-    <div></div>
-  )
-}
-
-export default __Component__

@@ -14,6 +14,7 @@ fn main() -> Result<(), ExitFailure> {
     // Clean .git & .gitignore
     react_component_gen::clean_component_folder(component_name)?;
     // Rename filenames
+    react_component_gen::rename_filenames(component_name)?;
     // Edit files to include component name
     // Notify that changes were successful
 

@@ -12,11 +12,12 @@ fn main() -> Result<(), ExitFailure> {
     // Clone repo into current directory
     react_component_gen::clone_component_temp(component_name)?;
     // Clean .git & .gitignore
+    react_component_gen::clean_component_folder(component_name)?;
     // Rename filenames
     // Edit files to include component name
     // Notify that changes were successful
 
-    println!("{}", component_name);
+    println!("Successfully created: {}", component_name);
 
     Ok(())
 }

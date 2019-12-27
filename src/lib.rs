@@ -3,6 +3,10 @@ use exitfailure::ExitFailure;
 use git2::{Repository};
 use std::fs;
 use regex::Regex;
+use std::io::{BufReader, BufRead};
+use std::fs::File;
+use std::path::{PathBuf};
+use std::io::{Write};
 
 /// Clones the template component into the working directory
 ///
@@ -58,6 +62,63 @@ pub fn rename_filenames(name: &str) -> Result<(), ExitFailure> {
     let new_filename = re.replace(&f, name).into_owned();
 
     fs::rename(f, &new_filename)?;
+  }
+
+  Ok(())
+}
+
+/// Loads a file from a path
+///
+/// # Examples
+/// ```no_run
+/// use std::path::{PathBuf};
+///
+/// let mut path = PathBuf::new();
+/// path.push("/path/to/file");
+/// let reader = load_file(path);
+/// ```
+fn load_file(path: &PathBuf) -> Result<BufReader<File>, ExitFailure> {
+  let content = File::open(path).with_context(|_| format!("could not read file `{:#?}`", path))?;
+  let reader = BufReader::new(content);
+
+  Ok(reader)
+}
+
+/// Edit files to replace placeholder component name with proper
+/// component name
+///
+/// # Example
+/// ```no_run
+/// fn main() {
+///   react_component_gen::edit_component_name("Accordion")?;
+/// }
+/// ```
+pub fn edit_component_name(name: &str) -> Result<(), ExitFailure> {
+  let files = vec![
+    format!("{}/README.md", name),
+    format!("{}/{}.tsx", name, name),
+    format!("{}/index.ts", name),
+    format!("{}/__test__/{}.test.tsx", name, name),
+    format!("{}/__spec__/{}.stories.tsx", name, name),
+  ];
+
+  // Loop through each file
+  for f in files {
+    let mut path = PathBuf::new();
+    path.push(f);
+    let content = load_file(&path)?;
+    let mut data = String::new();
+
+    // Loop through lines and push into String
+    for l in content.lines() {
+      let line = l.unwrap();
+      data.push_str(&format!("{}\n", line));
+    }
+
+    // replace name and override file
+    let new_filedata = data.replace("__COMPONENT__", &name);
+    let mut dst = File::create(&path)?;
+    dst.write(new_filedata.as_bytes())?;
   }
 
   Ok(())

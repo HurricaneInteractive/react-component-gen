@@ -133,3 +133,31 @@ pub fn edit_component_name(name: &str) -> Result<(), ExitFailure> {
 
     Ok(())
 }
+
+/// Removes the __test__ folder
+///
+/// # Example
+/// ```ignore
+/// fn main() {
+///   react_component_gen::remove_tests("Accordion")?;
+/// }
+/// ```
+pub fn remove_tests(name: &str) -> Result<(), ExitFailure> {
+    fs::remove_dir_all(format!("{}/__test__", name))?;
+
+    Ok(())
+}
+
+/// Removes the __spec__ folder
+///
+/// # Example
+/// ```ignore
+/// fn main() {
+///   react_component_gen::remove_specs("Accordion")?;
+/// }
+/// ```
+pub fn remove_specs(name: &str) -> Result<(), ExitFailure> {
+    fs::remove_dir_all(format!("{}/__spec__", name))?;
+
+    Ok(())
+}

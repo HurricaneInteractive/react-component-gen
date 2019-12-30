@@ -20,8 +20,8 @@ fn main() -> Result<(), ExitFailure> {
     let args = Cli::from_args();
     let component_name = &args.name;
     let _desc = &args.description;
-    let _add_tests = &args.test;
-    let _add_stories = &args.stories;
+    let remove_tests = &args.test;
+    let remove_stories = &args.stories;
 
     // Check if component is already in directory
     if Path::new(&component_name).exists() {
@@ -35,10 +35,15 @@ fn main() -> Result<(), ExitFailure> {
     // Clean .git & .gitignore
     react_component_gen::clean_component_folder(component_name)?;
 
-    // TODO: Allow to add --no-test --no-stories options
-    // Remove __test__ and __spec__ folders
-    // react_component_gen::remove_tests(component_name)?;
-    // react_component_gen::remove_specs(component_name)?;
+    // Remove __test__ if -t is defined
+    if *remove_tests {
+        react_component_gen::remove_tests(component_name)?;
+    }
+
+    // Remove __spec__ if -s is defined
+    if *remove_stories {
+        react_component_gen::remove_specs(component_name)?;
+    }
 
     // Rename filenames
     react_component_gen::rename_filenames(component_name)?;

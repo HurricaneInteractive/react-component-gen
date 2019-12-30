@@ -7,6 +7,7 @@ use std::io::{BufReader, BufRead};
 use std::fs::File;
 use std::path::{PathBuf};
 use std::io::{Write};
+use std::path::Path;
 
 /// Clones the template component into the working directory
 ///
@@ -61,10 +62,12 @@ pub fn rename_filenames(name: &str) -> Result<(), ExitFailure> {
     ];
 
     for f in files {
-        let re = Regex::new(r"__COMPONENT__").unwrap();
-        let new_filename = re.replace(&f, name).into_owned();
+        if Path::new(&f).exists() {
+            let re = Regex::new(r"__COMPONENT__").unwrap();
+            let new_filename = re.replace(&f, name).into_owned();
 
-        fs::rename(f, &new_filename)?;
+            fs::rename(f, &new_filename)?;
+        }
     }
 
     Ok(())
@@ -107,6 +110,10 @@ pub fn edit_component_name(name: &str) -> Result<(), ExitFailure> {
 
     // Loop through each file
     for f in files {
+        if !Path::new(&f).exists() {
+            continue;
+        }
+
         let mut path = PathBuf::new();
         path.push(f);
         let content = load_file(&path)?;
